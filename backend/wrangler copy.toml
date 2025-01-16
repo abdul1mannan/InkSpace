@@ -1,0 +1,11 @@
+name = "backend"
+main = "src/index.ts"
+compatibility_date = "2025-01-16"
+
+
+[vars]
+#pooling db url
+DATABASE_URL=""
+#jwt secret
+JWT_SECRET=""
+
