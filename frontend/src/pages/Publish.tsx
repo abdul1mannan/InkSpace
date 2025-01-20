@@ -11,7 +11,7 @@ export const Publish = () => {
     try {
       await axios
         .post(
-          "$${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create",
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`,
           {
             title: title,
             content: content,
