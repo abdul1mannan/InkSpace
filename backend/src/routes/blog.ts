@@ -16,6 +16,7 @@ export const blogRouter = new Hono<{
   };
 }>();
 
+
 blogRouter.use("/*", async (c, next) => {
   const authHeader = c.req.header("authorization") || "";
   if (!authHeader) {
@@ -66,6 +67,7 @@ blogRouter.put("/update/:id", async (c) => {
   if (!success) {
     return c.json({ error: "Invalid Inputs" }, 400);
   }
+
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -104,7 +106,7 @@ blogRouter.get("/get/:id", async (c) => {
         },
       },
     });
-    console.log(post);
+    
     if (!post) {
       return c.json({ error: "Post not found" }, 404);
     }

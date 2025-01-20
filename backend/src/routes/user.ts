@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client/edge";
-import { sign } from "hono/jwt";
+import { sign, verify } from "hono/jwt";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { signupSchema, signinSchema } from "@abdul1mannan/inkspace-common";
@@ -15,7 +15,7 @@ userRouter.post("/signup", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   const body = await c.req.json();
-  const {success} = signupSchema.safeParse(body);
+  const { success } = signupSchema.safeParse(body);
   if (!success) {
     return c.json({ error: "Invalid Input" }, 400);
   }
@@ -46,7 +46,7 @@ userRouter.post("/signin", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   const body = await c.req.json();
-  const {success} = signinSchema.safeParse(body);
+  const { success } = signinSchema.safeParse(body);
   if (!success) {
     return c.json({ error: "Invalid Inputs" }, 400);
   }
@@ -64,4 +64,17 @@ userRouter.post("/signin", async (c) => {
   } catch (error) {
     return c.json({ error: "Internal server error" }, 500);
   }
+});
+
+userRouter.get("/me", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+  const token = c.req.header("Authorization")?.split(" ")[1];
+  if (!token) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const decoded = (await verify(token, c.env.JWT_SECRET)) as { id: string };
+  const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+  return c.json({ name: user?.name });
 });

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface Blog {
+export interface Blog {
   id: string;
   title: string;
   content: string;
   author: {
-    name: string;
+    name?: string;
   };
 }
 
@@ -14,16 +14,21 @@ export const useBlog = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(true);
   const [blog, setBlog] = useState<Blog>();
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8787/api/v1/blog/get/${id}`, {
-        headers: {
+    try {
+      axios
+        .get(`http://127.0.0.1:8787/api/v1/blog/get/${id}`, {
+          headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((res) => {
-        setBlog(res.data.post);
-        setLoading(false);
+          setBlog(res.data.post);
       });
+    } catch (error) {
+      console.error("Failed to fetch blog data", error);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
   return { loading, blog };
 };
@@ -48,3 +53,5 @@ export const useBlogs = () => {
   }, []);
   return { loading, blogs };
 };
+
+

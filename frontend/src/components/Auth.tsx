@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SignupSchema } from "@abdul1mannan/inkspace-common";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 export const Auth = ({ type }: { type: "signup" | "signin" }) => {
   const [postInputs, setPostInputs] = useState<SignupSchema>({
     email: "",
@@ -21,6 +22,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
       localStorage.setItem("token", token);
       if (type === "signup") {
         alert("Signup successful");
+
         navigate("/");
       } else {
         alert("Signin successful");

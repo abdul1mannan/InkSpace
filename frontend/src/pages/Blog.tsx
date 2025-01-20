@@ -1,23 +1,32 @@
 import { Appbar } from "../components/Appbar";
 import { BlogCard } from "../components/BlogCard";
 import { useBlogs } from "../hooks";
+import { useUser } from "../hooks/useUser";
+
 export const Blog = () => {
-  const { blogs, loading } = useBlogs();
-  if (loading)
+  const { blogs, loading: blogsLoading } = useBlogs();
+  const { userLoading } = useUser();
+  
+  // Wait for both user and blogs to finish loading
+  const isLoading = userLoading || blogsLoading;
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
       </div>
     );
+  }
   return (
     <div>
       <div className="flex justify-center">
         <Appbar />
       </div>
       <div className="flex justify-center">
-        <div >
+        <div>
           {blogs.map((blog) => (
             <BlogCard
+              key={blog.id}
               id={blog.id}
               authorName={blog.author.name}
               title={blog.title}
