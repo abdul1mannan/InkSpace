@@ -16,7 +16,7 @@ export const useBlog = ({ id }: { id: string }) => {
   useEffect(() => {
     try {
       axios
-        .get(`http://127.0.0.1:8787/api/v1/blog/get/${id}`, {
+        .get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/get/${id}`, {
           headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
