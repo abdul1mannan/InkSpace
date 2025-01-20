@@ -6,7 +6,7 @@ import { useUser } from "../hooks/useUser";
 export const Blog = () => {
   const { blogs, loading: blogsLoading } = useBlogs();
   const { userLoading } = useUser();
-  
+
   // Wait for both user and blogs to finish loading
   const isLoading = userLoading || blogsLoading;
 
@@ -28,9 +28,9 @@ export const Blog = () => {
             <BlogCard
               key={blog.id}
               id={blog.id}
-              authorName={blog.author.name}
-              title={blog.title}
-              content={blog.content}
+              authorName={blog.author.name || ""}
+              title={blog.title || ""}
+              content={blog.content || ""}
               publishedDate="2024-01-01"
             />
           ))}
