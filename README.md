@@ -17,7 +17,7 @@ InkSpace is a modern blogging application that enables users to sign up, sign in
 
 ### Backend
 - **Framework**: [Cloudflare Hono](https://hono.dev/)
-- **Language**: JavaScript/TypeScript
+- **Language**: TypeScript
 - **Features**:
   - Lightweight and high-performance routing.
   - Optimized for serverless environments.
