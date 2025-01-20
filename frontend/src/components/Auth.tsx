@@ -1,13 +1,38 @@
 import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { SignupSchema } from "@abdul1mannan/inkspace-common";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 export const Auth = ({ type }: { type: "signup" | "signin" }) => {
   const [postInputs, setPostInputs] = useState<SignupSchema>({
     email: "",
     password: "",
     name: "",
   });
+  const navigate = useNavigate();
+
+  async function sendRequest() {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/${type}`,
+        postInputs
+      );
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      if (type === "signup") {
+        alert("Signup successful");
+        navigate("/");
+      } else {
+        alert("Signin successful");
+        navigate("/blogs");
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data.error);
+      }
+    }
+  }
+
   return (
     <div className="h-screen flex justify-center flex-col md:flex">
       <div className="text-3xl font-extrabold text-center ">
@@ -49,6 +74,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
         }
       />
       <button
+        onClick={sendRequest}
         type="button"
         className="text-white mt-6 bg-gray-800 w-full hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
       >

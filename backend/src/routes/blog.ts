@@ -2,7 +2,10 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
-import { createBlogSchema, updateBlogSchema } from "@abdul1mannan/inkspace-common";
+import {
+  createBlogSchema,
+  updateBlogSchema,
+} from "@abdul1mannan/inkspace-common";
 export const blogRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
@@ -20,7 +23,6 @@ blogRouter.use("/*", async (c, next) => {
   }
   const token = authHeader.split(" ")[1];
 
-  
   const response = await verify(token, c.env.JWT_SECRET);
   if (response) {
     c.set("userId", String(response.id));
@@ -33,10 +35,10 @@ blogRouter.use("/*", async (c, next) => {
 blogRouter.post("/create", async (c) => {
   const body = await c.req.json();
   const userId = c.get("userId");
-  const {success} = createBlogSchema.safeParse(body);
+  const { success } = createBlogSchema.safeParse(body);
   if (!success) {
     return c.json({ error: "Invalid Inputs" }, 400);
-  }   
+  }
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -60,7 +62,7 @@ blogRouter.post("/create", async (c) => {
 blogRouter.put("/update/:id", async (c) => {
   const body = await c.req.json();
   const userId = c.get("userId");
-  const {success} = updateBlogSchema.safeParse(body);
+  const { success } = updateBlogSchema.safeParse(body);
   if (!success) {
     return c.json({ error: "Invalid Inputs" }, 400);
   }
@@ -91,18 +93,28 @@ blogRouter.get("/get/:id", async (c) => {
   try {
     const post = await prisma.post.findUnique({
       where: { id: c.req.param("id") },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
+    console.log(post);
     if (!post) {
       return c.json({ error: "Post not found" }, 404);
     }
     return c.json({
-      post,
+      post
     });
   } catch (error) {
     return c.json({ error: "Internal server error" }, 500);
   }
 });
-
 
 //pagination?
 
@@ -111,7 +123,18 @@ blogRouter.get("/bulk", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
   try {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      select: {
+        content: true,
+        title: true,
+        id: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
     return c.json({ posts });
   } catch (error) {
     return c.json({ error: "Internal server error" }, 500);

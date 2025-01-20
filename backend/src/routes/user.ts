@@ -22,7 +22,7 @@ userRouter.post("/signup", async (c) => {
 
   const user = await prisma.user.findUnique({ where: { email: body.email } });
   if (user) {
-    return c.json({ error: "User already exists" }, 400);
+    return c.json({ error: "User already exists" }, 409);
   }
   try {
     const newUser = await prisma.user.create({
@@ -34,7 +34,7 @@ userRouter.post("/signup", async (c) => {
     });
     const token = await sign({ id: newUser.id }, c.env.JWT_SECRET);
     return c.json({
-      jwt: token,
+      token: token,
     });
   } catch (error) {
     return c.json({ error: "Internal server error" }, 500);
@@ -60,7 +60,7 @@ userRouter.post("/signin", async (c) => {
     }
 
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-    return c.json({ jwt: token });
+    return c.json({ token: token });
   } catch (error) {
     return c.json({ error: "Internal server error" }, 500);
   }
