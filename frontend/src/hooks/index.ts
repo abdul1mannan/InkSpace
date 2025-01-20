@@ -41,7 +41,7 @@ export const useBlogs = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://127.0.0.1:8787/api/v1/blog/bulk", {
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/bulk`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
